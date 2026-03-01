@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "lakshay_verifier_client",
+  "version": "${version}",
+  "name": "Lakshay Verifier Client (Modern)",
+  "description": "Sends installed mod ids to server when requested (CustomPayload API).",
+  "authors": ["lakshay"],
+  "license": "All-Rights-Reserved",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "me.lakshay.verifierclient.VerifierClient"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.16.0",
+    "minecraft": "*",
+    "fabric": "*"
+  }
+}
