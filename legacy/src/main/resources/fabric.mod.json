@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "lakshay_verifier_client",
+  "version": "${version}",
+  "name": "Lakshay Verifier Client (Legacy)",
+  "description": "Sends installed mod ids to server when requested.",
+  "authors": ["lakshay"],
+  "contact": {},
+  "license": "All-Rights-Reserved",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "me.lakshay.verifierclient.VerifierClient"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.14.0",
+    "minecraft": "*",
+    "fabric": "*"
+  }
+}
