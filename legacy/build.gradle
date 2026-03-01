@@ -1,0 +1,42 @@
+plugins {
+    id "fabric-loom" version "1.6.12"
+}
+
+def mcVersion     = (project.findProperty("mcVersion")     ?: "1.20").toString()
+def yarnMappings  = (project.findProperty("yarnMappings")  ?: "1.20+build.1").toString()
+def fabricLoader  = (project.findProperty("fabricLoader")  ?: "0.14.19").toString()
+def fabricApi     = (project.findProperty("fabricApi")     ?: "0.83.0+1.20").toString()
+
+group = "me.lakshay"
+version = "1.0.0+${mcVersion}"
+
+repositories {
+    maven { url = "https://maven.fabricmc.net/" }
+    mavenCentral()
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${mcVersion}"
+    mappings "net.fabricmc:yarn:${yarnMappings}:v2"
+    modImplementation "net.fabricmc:fabric-loader:${fabricLoader}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${fabricApi}"
+}
+
+java {
+    // For legacy compatibility (1.16.5 etc). Java 21 compiler can still target 8.
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+    withSourcesJar()
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = "UTF-8"
+    options.release.set(8)
+}
+
+processResources {
+    inputs.property "version", project.version
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version, "mc": mcVersion
+    }
+}
