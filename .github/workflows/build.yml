@@ -1,0 +1,109 @@
+name: Build Verifier Client (Major Versions)
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch: {}
+
+jobs:
+  legacy:
+    name: Legacy (1.16.5, 1.18.2, 1.20, 1.21.1)
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - mc: "1.16.5"
+            yarn: "1.16.5+build.10"
+            loader: "0.14.25"
+            api: "0.42.0+1.16"
+
+          - mc: "1.18.2"
+            yarn: "1.18.2+build.4"
+            loader: "0.14.25"
+            api: "0.76.0+1.18.2"
+
+          - mc: "1.20"
+            yarn: "1.20+build.1"
+            loader: "0.14.19"
+            api: "0.83.0+1.20"
+
+          - mc: "1.21.1"
+            yarn: "1.21.1+build.3"
+            loader: "0.16.0"
+            api: "0.116.9+1.21.1"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Java (Temurin)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Setup Gradle 8.8 (no cache)
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: "8.8"
+          cache-disabled: true
+
+      - name: Build (legacy)
+        run: |
+          gradle -p legacy clean remapJar --no-daemon \
+            -PmcVersion="${{ matrix.mc }}" \
+            -PyarnMappings="${{ matrix.yarn }}" \
+            -PfabricLoader="${{ matrix.loader }}" \
+            -PfabricApi="${{ matrix.api }}"
+
+      - name: Upload jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: verifier-client-${{ matrix.mc }}
+          path: legacy/build/libs/*.jar
+
+  modern:
+    name: Modern (1.21.5, 1.21.11)
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - mc: "1.21.5"
+            yarn: "1.21.5+build.1"
+            loader: "0.16.7"
+            api: "0.124.0+1.21.5"
+
+          - mc: "1.21.11"
+            yarn: "1.21.11+build.4"
+            loader: "0.18.1"
+            api: "0.141.3+1.21.11"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Java (Temurin)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Setup Gradle 9.2.1 (no cache)
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: "9.2.1"
+          cache-disabled: true
+
+      - name: Build (modern)
+        run: |
+          gradle -p modern clean remapJar --no-daemon \
+            -PmcVersion="${{ matrix.mc }}" \
+            -PyarnMappings="${{ matrix.yarn }}" \
+            -PfabricLoader="${{ matrix.loader }}" \
+            -PfabricApi="${{ matrix.api }}"
+
+      - name: Upload jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: verifier-client-${{ matrix.mc }}
+          path: modern/build/libs/*.jar
